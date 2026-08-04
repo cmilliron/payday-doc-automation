@@ -1,6 +1,6 @@
 import datetime, sys
 from pathlib import Path
-from config import output_folder
+from config import output_folder, employees, cody_default_hours
 
 
 def get_hours_by_employee(employee: str, prev_sunday: datetime.date):
@@ -10,13 +10,11 @@ def get_hours_by_employee(employee: str, prev_sunday: datetime.date):
     """
     print(f"Please enter your time for {employee}")
     work_week = []
-    work_week.append(input(f"{(prev_sunday - datetime.timedelta(days=6)).strftime('%Y-%m-%d')} - Monday: "))
-    work_week.append(input(f"{(prev_sunday - datetime.timedelta(days=5)).strftime('%Y-%m-%d')} - Tuesday: "))
-    work_week.append(input(f"{(prev_sunday - datetime.timedelta(days=4)).strftime('%Y-%m-%d')} - Wednesday: "))
-    work_week.append(input(f"{(prev_sunday - datetime.timedelta(days=3)).strftime('%Y-%m-%d')} - Thursday: "))
-    work_week.append(input(f"{(prev_sunday - datetime.timedelta(days=2)).strftime('%Y-%m-%d')} - Friday: "))
-    work_week.append(input(f"{(prev_sunday - datetime.timedelta(days=1)).strftime('%Y-%m-%d')} - Saturday: "))
-    work_week.append(input(f"{prev_sunday.strftime('%Y-%m-%d')} - Sunday: "))
+    for i in range(1, 8):
+        day = prev_sunday - datetime.timedelta(days=(7-i))
+        current_day = f"{day.strftime('%Y-%m-%d')} - {day.strftime("%A")}: "
+        hours = input(current_day)
+        work_week.append(float(hours))
     return work_week
 
 def create_folder(dest_folder: Path):
@@ -29,9 +27,9 @@ def create_folder(dest_folder: Path):
         sys.exit(f"❌ Error creating directory: {e}")
 
 
-def write_file(employee: str, date: str, content: str) -> None:
-    file_name = f"{employee} - {date}.txt"
-    subfolder = Path(date)
+def write_file(employee: str, prev_sunday: str, paydate: str, content: str) -> None:
+    file_name = f"{employee} - {prev_sunday}.txt"
+    subfolder = Path(paydate)
     dest_path = Path(output_folder) / subfolder
     dest_file = dest_path / file_name
     create_folder(dest_path)
@@ -40,15 +38,16 @@ def write_file(employee: str, date: str, content: str) -> None:
 
 
 def process_workweek(work_week, employee, prev_sunday) -> str:
-    output = f"{employee} - For Week Ending on {prev_sunday.strftime('%m/%d/%Y')}\n"
+    output = f"{employee} - For Week Ending on {prev_sunday.strftime('%m/%d/%Y')}\n\n"
     total = 0
     for ind, hours in enumerate(work_week, 1):
         day = prev_sunday - datetime.timedelta(days=(7-ind))
-        current_day = f"{day.strftime('%Y-%m-%d')} - {day.strftime("%A"):28}: {hours}\n"
-        total += float(hours)
+        current_day = f"{day.strftime('%Y-%m-%d')} - {day.strftime("%A") + ":":15} {hours:>4.2f}\n"
+        total += hours
         output += current_day
-    output += f"{"Work Week totals:":28} {total}"
+    output += f"{"Work Week totals:":28}{total:>4.2f}"
     return output
+
 
 
 def process_payroll():
@@ -71,11 +70,28 @@ def process_payroll():
     previous_sunday = today - datetime.timedelta(days=days_since_sunday)
 
     # Format the dates for use in paths and content
-    folder_date_str = upcoming_friday.strftime('%Y-%m-%d')
+    paydate_formated = upcoming_friday.strftime('%Y-%m-%d')
     sunday_date_str = previous_sunday.strftime('%m/%d/%Y') # Using MM/DD/YYYY for content date
-    sunday_for_file = previous_sunday.strftime('%Y-%m-%d')
+    prev_sunday_string = previous_sunday.strftime('%Y-%m-%d')
 
-    employee = input("Employee: ")
-    hours = get_hours_by_employee(employee=employee, prev_sunday=previous_sunday)
-    content = process_workweek(hours, employee, previous_sunday)
-    write_file(employee, sunday_for_file, content)
+    for employee in employees:
+        hours = []
+        if employee == "Cody Milliron":
+            hours = cody_default_hours
+        else:
+            hours = get_hours_by_employee(employee=employee, prev_sunday=previous_sunday)
+        content = process_workweek(hours, employee, previous_sunday)
+        write_file(employee, prev_sunday_string, paydate_formated, content)
+
+    done = False
+    while (not done):
+        cont = input("Do you have any more employees to add (yes/no): ")
+        if cont.lower() == "n" or cont.lower() == "no":
+            done = True
+            continue
+        employee = input("What is the name of the employee: ")
+        hours = get_hours_by_employee(employee=employee, prev_sunday=previous_sunday)
+        content = process_workweek(hours, employee, previous_sunday)
+        write_file(employee, prev_sunday_string, paydate_formated, content)
+
+    print("--Done--")
