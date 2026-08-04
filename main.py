@@ -1,5 +1,6 @@
 import datetime
 from pathlib import Path
+from weekly_report import process_payroll
 
 def setup_weekly_report():
     """
@@ -77,4 +78,5 @@ Total
         print(f"❌ Error writing file: {e}")
 
 if __name__ == "__main__":
-    setup_weekly_report()
+    # setup_weekly_report()
+    process_payroll()
