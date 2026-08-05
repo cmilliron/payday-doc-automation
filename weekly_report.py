@@ -45,7 +45,7 @@ def process_workweek(work_week, employee, prev_sunday) -> str:
         current_day = f"{day.strftime('%Y-%m-%d')} - {day.strftime("%A") + ":":15} {hours:>4.2f}\n"
         total += hours
         output += current_day
-    output += f"{"Work Week totals:":28}{total:>4.2f}"
+    output += f"{"Work Week totals:":28} {total:>5.2f}"
     return output
 
 
