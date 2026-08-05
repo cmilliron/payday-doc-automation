@@ -73,9 +73,7 @@ def process_payroll():
 
     # Format the dates for use in paths and content
     paydate_formated = upcoming_friday.strftime("%Y-%m-%d")
-    sunday_date_str = previous_sunday.strftime(
-        "%m/%d/%Y"
-    )  # Using MM/DD/YYYY for content date
+    sunday_date_str = previous_sunday.strftime("%m/%d/%Y")  # MM/DD/YYYY
     prev_sunday_string = previous_sunday.strftime("%Y-%m-%d")
 
     for employee in employees:
