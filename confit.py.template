@@ -1,0 +1,2 @@
+output_folder = r"<destnation location>"
+employees = ["emplyee 1", "employee 2"]
