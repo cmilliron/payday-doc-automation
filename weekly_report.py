@@ -15,8 +15,11 @@ def get_hours_by_employee(employee: str, prev_sunday: datetime.date):
     for i in range(1, 8):
         day = prev_sunday - datetime.timedelta(days=(7 - i))
         current_day = f"{day.strftime('%Y-%m-%d')} - {day.strftime('%A')}: "
-        hours = input(current_day)
-        work_week.append(float(hours))
+        hours_input = input(current_day)
+        if hours_input == "":
+            work_week.append(0)
+        else:
+            work_week.append(float(hours_input))
     return work_week
 
 
@@ -48,7 +51,7 @@ def process_workweek(work_week, employee, prev_sunday) -> str:
         current_day = f"{day.strftime('%Y-%m-%d')} - {day.strftime('%A') + ':':15} {hours:>4.2f}\n"
         total += hours
         output += current_day
-    output += f"{'Work Week totals:':28} {total:>5.2f}"
+    output += f"{'Work Week totals:':27} {total:>5.2f}"
     return output
 
 
