@@ -24,9 +24,10 @@ def get_hours_by_employee(employee: str, prev_sunday: datetime.date):
 
 
 def create_folder(dest_folder: Path):
+    """
+    Creates a folder at the given path.
+    """
     try:
-        # parents=True allows creating intermediate directories (though not needed here)
-        # exist_ok=True prevents an error if the directory already exists
         dest_folder.mkdir(exist_ok=True)
         print(f"✅ Folder created/ensured: {dest_folder.resolve()}")
     except Exception as e:
@@ -44,6 +45,9 @@ def write_file(employee: str, prev_sunday: str, paydate: str, content: str) -> N
 
 
 def process_workweek(work_week, employee, prev_sunday) -> str:
+    """
+    Processes the workweek array and returns a string with the report.
+    """
     output = f"{employee} - For Week Ending on {prev_sunday.strftime('%m/%d/%Y')}\n\n"
     total = 0
     for ind, hours in enumerate(work_week, 1):
